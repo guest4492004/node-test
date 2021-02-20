@@ -1,8 +1,8 @@
 const http = require('http');
 
 const server = http.createServer((req, res) => {
-  console.log("hello new deploy");
-  res.write("hi there on ec2-new.");
+  console.log("hello new deploy3");
+  res.write("hi there on ec2-task3.");
   res.end();
 });
 
