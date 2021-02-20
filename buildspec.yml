@@ -16,3 +16,10 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push 189569451062.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest
+      - echo "[{\"name\":\"${IMAGE_NAME}\",\"imageUri\":\"${REPOSITORY_URI}:${IMAGE_TAG}\"}]" > imagedefinitions.json
+      - printf '{"Version":"1.0","ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imageDetail.json
+  artifacts:
+    files:
+      - imagedefinitions.json
+      - imageDetail.json
+
