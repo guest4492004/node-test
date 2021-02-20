@@ -3,17 +3,35 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - REPOSITORY_URI=189569451062.dkr.ecr.ap-northeast-1.amazonaws.com/app
       - echo Logging in to Amazon ECR...
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo $CODEBUILD_BATCH_BUILD_IDENTIFIER
+      - echo $CODEBUILD_BUILD_ARN
+      - echo $CODEBUILD_BUILD_ID
+      - echo $CODEBUILD_BUILD_IMAGE
+      - echo $CODEBUILD_BUILD_NUMBER
+      - echo $CODEBUILD_SOURCE_REPO_URL
+      - echo $CODEBUILD_SOURCE_VERSION
+      - echo $CODEBUILD_WEBHOOK_ACTOR_ACCOUNT_ID
+      - echo $CODEBUILD_WEBHOOK_EVENT
+      - echo $CODEBUILD_WEBHOOK_TRIGGER
+      - echo $CODEBUILD_LOG_PATH
       - aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin 189569451062.dkr.ecr.ap-northeast-1.amazonaws.com
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo $COMMIT_HASH
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - echo $IMAGE_TAG
   build:
     commands:
       - echo Build started on `date`
-      - echo Building the Docker image...          
-      - docker build -t app .
-      - docker tag app:latest 189569451062.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push 189569451062.dkr.ecr.ap-northeast-1.amazonaws.com/app:latest
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
 
